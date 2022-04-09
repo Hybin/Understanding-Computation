@@ -1,53 +1,60 @@
 use std::fmt::{Display, Formatter, Result};
 
-use super::{Number, Expression};
+use super::{Number, Expression, ExpressionInstance};
 
 #[derive(Debug, PartialEq)]
-pub struct Add {
-    left: Number,
-    right: Number,
+pub struct Add<T: Expression> {
+    left: ExpressionInstance<T>,
+    right: ExpressionInstance<T>,
 }
 
-impl Add {
-    pub fn new(left: Number, right: Number) -> Self {
+impl<T: Expression> Add<T> {
+    pub fn new(
+        left: ExpressionInstance<T>,
+        right: ExpressionInstance<T>
+    ) -> Self {
         Self { left, right }
     }
-
-    pub fn to_string(&self) -> String {
-        format!("{} + {}", self.left.to_string(), self.right.to_string())
-    }
 }
 
-impl Display for Add {
+impl<T: Expression> Display for Add<T> {
     fn fmt(&self, formatter: &mut Formatter) -> Result {
-        write!(formatter, "({})", self.to_string())
+        write!(formatter, "({})", self.stringify())
     }
 }
 
-impl Expression for Add {
+impl<T: Expression> Expression for Add<T> {
     fn reducible(&self) -> bool {
         true
+    }
+
+    fn stringify(&self) -> String {
+        format!("{} + {}", self.left.to_string(), self.right.to_string())
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{Number, Add, Expression};
+    use super::{Number, Add, Expression, ExpressionInstance};
     
     #[test]
     fn test_add() {
-        let left = Number::new(1);
-        let right = Number::new(2);
+        let left = ExpressionInstance::new(Number::new(1));
+        let right = ExpressionInstance::new(Number::new(2));
         let expression = Add::new(left, right);
 
         assert_eq!(
             expression, 
             Add {
-                left: Number {
-                    value: 1
+                left: ExpressionInstance {
+                    instance: Number {
+                        value: 1
+                    }
                 },
-                right: Number {
-                    value: 2
+                right: ExpressionInstance {
+                    instance: Number {
+                        value: 2
+                    }
                 }
             }
         );
@@ -55,17 +62,17 @@ mod tests {
 
     #[test]
     fn test_add_to_string() {
-        let left = Number::new(1);
-        let right = Number::new(2);
+        let left = ExpressionInstance::new(Number::new(1));
+        let right = ExpressionInstance::new(Number::new(2));
         let expression = Add::new(left, right);
 
-        assert_eq!(expression.to_string(), String::from("1 + 2"));
+        assert_eq!(expression.stringify(), String::from("1 + 2"));
     }
 
     #[test]
     fn test_add_reducible() {
-        let left = Number::new(1);
-        let right = Number::new(2);
+        let left = ExpressionInstance::new(Number::new(1));
+        let right = ExpressionInstance::new(Number::new(2));
         let expression = Add::new(left, right);
 
         assert_eq!(expression.reducible(), true);

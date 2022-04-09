@@ -11,21 +11,21 @@ impl Number {
     pub fn new(value: i32) -> Self {
         Self { value }
     }
+}
 
-    pub fn to_string(&self) -> String {
+impl Expression for Number {
+    fn reducible(&self) -> bool {
+        false
+    }
+
+    fn stringify(&self) -> String {
         self.value.to_string()
     }
 }
 
 impl Display for Number {
     fn fmt(&self, formatter: &mut Formatter) -> Result {
-        write!(formatter, "({})", self.to_string())
-    }
-}
-
-impl Expression for Number {
-    fn reducible(&self) -> bool {
-        false
+        write!(formatter, "({})", self.stringify())
     }
 }
 
@@ -49,7 +49,7 @@ mod tests {
     fn test_number_to_string() {
         let number = Number::new(32);
 
-        assert_eq!(number.to_string(), String::from("32"));
+        assert_eq!(number.stringify(), String::from("32"));
     }
 
     #[test]
