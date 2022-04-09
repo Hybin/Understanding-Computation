@@ -14,6 +14,11 @@ pub trait Expression {
     fn stringify(&self) -> String;
 }
 
+pub trait BinaryExpression<T: Expression> {
+    /// compute the sub-expression inside a complex expression
+    fn reduce(&self) -> ExpressionInstance<T>;
+}
+
 #[derive(Debug, PartialEq)]
 pub struct ExpressionInstance<T: Expression> {
     instance: T
@@ -26,5 +31,9 @@ impl<T: Expression> ExpressionInstance<T> {
 
     fn to_string(&self) -> String {
         self.instance.stringify()
+    }
+
+    fn reducible(&self) -> bool {
+        self.instance.reducible()
     }
 }
